@@ -174,7 +174,7 @@ const platform = new Platform()
 const npc = new Npc()
 const textBox = new TextBox({
     image: npc.text1, 
-    x: 700,
+    x: 680,
     y: 350
 })
 const textBox0 = new TextBox({
@@ -224,7 +224,7 @@ function animate() {
         }
     }
     frame = frame + 1
-    
+
     //animation player up down
     if (frame === 60 && !keys.right.pressed && !keys.left.pressed) {
         if (player.currentSprite == player.sprites.stand.right) {
@@ -331,8 +331,10 @@ window.addEventListener('keydown', ({keyCode}) => {
     switch (keyCode) {
         case 83: 
             // console.log("left")
-            player.currentSprite = player.sprites.stand.left
-            keys.left.pressed = true
+            if (c.globalAlpha >= 0.99) {
+                player.currentSprite = player.sprites.stand.left
+                keys.left.pressed = true
+            }
             break;
         case 69: 
             // console.log("up")
@@ -340,8 +342,10 @@ window.addEventListener('keydown', ({keyCode}) => {
             break;
         case 70: 
             //console.log("right")
-            player.currentSprite = player.sprites.stand.right
-            keys.right.pressed = true
+            if (c.globalAlpha >= 0.99) {
+                player.currentSprite = player.sprites.stand.right
+                keys.right.pressed = true
+            }
             break;
         case 40: 
             //console.log("down")
