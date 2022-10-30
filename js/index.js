@@ -26,11 +26,13 @@ class Player {
         this.imageRight2 = new Image();   
         this.imageLeft2 = new Image(); 
         this.sunset = new Image(); 
+        this.sunset2 = new Image(); 
         this.imageRight.src = './img/omog.png';
         this.imageLeft.src = './img/omogleft.png';
         this.imageRight2.src = './img/omog2.png';
         this.imageLeft2.src = './img/omogleft2.png';
         this.sunset.src = './img/sunset.png';
+        this.sunset2.src = './img/1119.png';
         this.sprites = {
             stand: {
                 right: this.imageRight,
@@ -55,6 +57,39 @@ class Player {
             this.velocity.y = 0
         }
     }
+    reset() {
+        this.position = {
+            x: 100,
+            y: 100
+        }
+        this.velocity = {
+            x: 0,
+            y: 0,
+        }
+        this.width = 250
+        this.height = 250
+        this.imageRight = new Image();   
+        this.imageLeft = new Image();   
+        this.imageRight2 = new Image();   
+        this.imageLeft2 = new Image(); 
+        this.sunset = new Image(); 
+        this.sunset2 = new Image(); 
+        this.imageRight.src = './img/omog.png';
+        this.imageLeft.src = './img/omogleft.png';
+        this.imageRight2.src = './img/omog2.png';
+        this.imageLeft2.src = './img/omogleft2.png';
+        this.sunset.src = './img/sunset.png';
+        this.sunset2.src = './img/1119.png';
+        this.sprites = {
+            stand: {
+                right: this.imageRight,
+                left: this.imageLeft,
+                right2: this.imageRight2,
+                left2: this.imageLeft2
+            },
+        }
+        this.currentSprite = this.sprites.stand.right
+    }
 }
 
 class Npc {
@@ -69,18 +104,18 @@ class Npc {
         }
         this.width = 250
         this.height = 250
-        this.imageRight = new Image();   
+        this.imageLeft2 = new Image();   
         this.imageLeft = new Image();   
         this.sunset = new Image(); 
         this.text1 = new Image(); 
         this.text0 = new Image(); 
-        this.imageRight.src = './img/Syko-critterRight.png';
+        this.imageLeft2.src = './img/CritterUzoo2.png';
         this.imageLeft.src = './img/Syko-critterLeft.png';
         this.text1.src = './img/text1.png';
         this.text0.src = './img/text0.png';
         this.sprites = {
             stand: {
-                right: this.imageRight,
+                left2: this.imageLeft2,
                 left: this.imageLeft,
             },
         }
@@ -100,6 +135,34 @@ class Npc {
             this.velocity.y = 0
         }
     }
+    reset() {
+        this.position = {
+            x: 1700,
+            y: 120,
+        }
+        this.velocity = {
+            x: 0,
+            y: 0,
+        }
+        this.width = 250
+        this.height = 250
+        this.imageLeft2 = new Image();   
+        this.imageLeft = new Image();   
+        this.sunset = new Image(); 
+        this.text1 = new Image(); 
+        this.text0 = new Image(); 
+        this.imageLeft2.src = './img/CritterUzoo2.png';
+        this.imageLeft.src = './img/Syko-critterLeft.png';
+        this.text1.src = './img/text1.png';
+        this.text0.src = './img/text0.png';
+        this.sprites = {
+            stand: {
+                left2: this.imageRight,
+                left: this.imageLeft,
+            },
+        }
+        this.currentSprite = this.sprites.stand.left
+    }
 }
 
 
@@ -115,6 +178,14 @@ class Platform {
     draw() {
         c.fillRect(this.position.x, this.position.y, this.width, this.height)
     }
+    reset() {
+        this.position = {
+            x: 0,
+            y: 720
+        }
+        this.width = 3000
+        this.height = 20
+    }
 }
 
 class GenericObject {
@@ -129,6 +200,15 @@ class GenericObject {
     }
     draw() {
         c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+    }
+    reset() {
+        this.position = {
+            x: 0,
+            y: 50,
+        }
+        this.image = player.sunset
+        this.width = this.image.width
+        this.height = this.image.height
     }
 }
 
@@ -203,11 +283,144 @@ const keys = {
 player.update()
 let scrollOffSet = 0
 let scrollLevel = 0
-
+let endPoint = 0
 let frame = 0
 
-function animate() {
-    requestAnimationFrame(animate)
+function animatelvl1() {
+    if (endPoint === 0) {
+        requestAnimationFrame(animatelvl1)
+    } else {
+        console.log("ouoioio")
+        c.clearRect(0, 0, canvas.width, canvas.height)
+        requestAnimationFrame(animatelvl2)
+    }
+    c.clearRect(0, 0, canvas.width, canvas.height)
+  
+    genericObject.draw()
+    platform.draw()
+    player.update()
+    npc.update()
+    
+    //fade in
+
+    if (c.globalAlpha < 1) {
+        c.globalAlpha = c.globalAlpha + 0.00005
+        if (c.globalAlpha > 0.1) {
+            c.globalAlpha = c.globalAlpha + 0.002
+        }
+    }
+    frame = frame + 1
+
+    //animation player up down
+    if (frame === 60 && !keys.right.pressed && !keys.left.pressed) {
+        if (player.currentSprite == player.sprites.stand.right) {
+            player.currentSprite = player.sprites.stand.right2
+        }
+        else if (player.currentSprite == player.sprites.stand.right2) {
+            player.currentSprite = player.sprites.stand.right
+        }
+        else if (player.currentSprite == player.sprites.stand.left2) {
+            player.currentSprite = player.sprites.stand.left
+        }
+        else {
+            player.currentSprite = player.sprites.stand.left2
+        }
+        frame = 0
+    } else if (frame == 60) {
+        frame = 0
+    }
+
+    //scroll background and every object and player
+    if(keys.right.pressed && player.position.x < 500) {
+        player.velocity.x = 2.5
+    } else if (keys.left.pressed && player.position.x > 100) {
+        player.velocity.x = -2.5
+    } else {
+        player.velocity.x = 0
+        if (keys.right.pressed) {
+            scrollLevel += 2.5
+            if(scrollOffSet <= 1010) {
+                scrollOffSet += 2.5
+                
+                genericObject.position.x -= 2.5
+                platform.position.x -= 2.5
+                npc.position.x -= 2.5
+            }
+        } else if (keys.left.pressed) {
+            scrollLevel -=2.5
+            if(scrollOffSet >= 3) {
+                scrollOffSet -= 2.5
+                
+                platform.position.x += 2.5
+                genericObject.position.x += 2.5
+                npc.position.x += 2.5
+            }
+        }
+        
+    } 
+    // console.log(scrollOffSet)
+    if (player.position.y + player.height <= platform.position.y 
+        && player.position.y + player.height + player.velocity.y >= platform.position.y 
+         && player.position.x + player.width >= platform.position.x
+         && player.position.x <= platform.position.x + platform.width) {
+        player.velocity.y = 0
+
+    } 
+    if (npc.position.y + npc.height <= platform.position.y 
+        && npc.position.y + npc.height + npc.velocity.y >= platform.position.y 
+         && npc.position.x + npc.width >= platform.position.x
+         && npc.position.x <= platform.position.x + platform.width) {
+        npc.velocity.y = 0
+    }
+    //  console.log(c.globalAlpha)
+    if (scrollOffSet < 30 && c.globalAlpha >= 0.99) {
+        textBox0.draw()
+    }
+
+    //fade out 1
+    if (scrollOffSet > 1000) {
+        textBox.draw()
+        if(keys.right.pressed) {
+            player.velocity.x = 2.5
+        }
+        // 
+        if (scrollLevel > 1200 ) {
+             if (c.globalAlpha >= 0.05) {
+                c.globalAlpha = c.globalAlpha - 0.005
+                console.log(c.globalAlpha)
+            }
+            else if (scrollLevel > 1200) {
+                console.log("oododoododod")
+                endPoint = 1
+            }
+        }
+    }
+    
+}
+
+
+
+
+// 
+
+function animatelvl2() {
+    if (endPoint === 1) {
+        player.reset()
+        platform.reset()
+        npc.reset()
+        genericObject.reset()
+        c.clearRect(0, 0, canvas.width, canvas.height)
+        endPoint = 0;
+        scrollOffSet = 0
+        scrollLevel = 0
+        endPoint = 0
+        frame = 0
+        genericObject.image = player.sunset2;
+        npc.currentSprite = npc.imageLeft2
+    }
+    if (endPoint === 0) {
+        requestAnimationFrame(animatelvl2)
+    }
     c.clearRect(0, 0, canvas.width, canvas.height)
   
     genericObject.draw()
@@ -286,11 +499,15 @@ function animate() {
          && npc.position.x <= platform.position.x + platform.width) {
         npc.velocity.y = 0
     } console.log(c.globalAlpha)
+
+    //dialogue
     if (scrollOffSet < 30 && c.globalAlpha >= 0.99) {
-        textBox0.draw()
+        // textBox0.draw()
     }
+
+    //fade out 1
     if (scrollOffSet > 1000) {
-        textBox.draw()
+        // textBox.draw()
         if(keys.right.pressed) {
             player.velocity.x = 2.5
         }
@@ -298,12 +515,17 @@ function animate() {
              if (c.globalAlpha >= -0.05) {
                 c.globalAlpha = c.globalAlpha - 0.005
             }
+            else {
+                endPoint = 1
+            }
         }
     }
     
 }
 
-animate()
+animatelvl1()
+
+// animatelvl2()
 
 
 
